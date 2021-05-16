@@ -1,0 +1,48 @@
+title: PT NAD sourcetype mappings
+order: 20
+backends:
+  - ptnad
+logsources:
+  ptnad-dns:
+    category: dns
+    rewrite:
+      product: zeek
+      service: dns
+  ptnad-proxy:
+    category: proxy
+    rewrite:
+      product: zeek
+      service: http
+  ptnad-webserver:
+    category: webserver
+    rewrite:
+      product: zeek
+      service: http
+fieldmappings:
+  # All Logs Applied Mapping & Taxonomy
+  dst_ip: dst.ip
+  dst_port: dst.port
+  network_protocol: app_proto
+  src_ip: src.ip
+  src_port: src.port
+  # DNS matching Taxonomy & DNS Category
+  answer: dns.any
+  #question_length: # Does not exist in open source version
+  record_type: dns.answer.rrtypee
+  #parent_domain: # Does not exist in open source version
+  # HTTP matching Taxonomy & Web/Proxy Category
+  cs-bytes: http.rqs.content-lengtht
+  cs-cookie: http.rqs.cookiee
+  r-dns: http.rqs.host
+  sc-bytes: http.rsp.content-length
+  sc-status: http.rsp.code
+  c-uri: http.rqs.url
+  c-uri-extension: http.rqs.url
+  c-uri-query: http.rqs.url
+  c-uri-stem: http.rqs.url
+  c-useragent: http.rqs.user-agent
+  cs-host: http.rqs.host
+  cs-method: http.rqs.method
+  cs-referrer: http.rqs.referrer
+  sc(Content-Type): http.rsp.content-type
+  #cs-version: version

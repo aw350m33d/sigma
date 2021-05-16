@@ -1,0 +1,311 @@
+title: MaxPatrolSIEM
+order: 20
+backends:
+  - mpsiem
+  - mpsiem-corr
+# EventID:
+# - 5145
+# - 4698
+# - 4699
+# - 4700
+# - 4701
+# - 4702
+# - 4688
+# - 4689
+# - S 1
+#logsources:
+#  windows-sysmon:
+#    product: windows
+#    service: sysmon
+#    conditions:
+#      EventID: 1
+#  process_creation_1:
+#    category: process_creation
+#    product: window
+fieldmappings:
+  UserName:
+    - subject.account.name
+    - subject.name
+  UserID:
+    - subject.account.id 
+    - subject.id
+  WorkstationName:
+    - src.hostname
+    - src.fqdn
+  Workstation:
+    - src.hostname
+    - src.fqdn
+  Message:
+    - body
+  PrivilegeList:
+    - object.value
+  AccessMask:
+    EventID in [5145, 4662, 4656]:
+      - datafiled6      
+    EventID=4663:
+      - datafield5
+    EventID=5140:
+      - datafield3
+    default:
+      - object.property
+  Properties:
+    EventID=4662:
+    - datafield2
+  LogonProcessName:
+    - logon_service
+    - datafield8                          # deprecated
+  AuthenticationPackageName:
+    - datafield9
+  LogonType:
+    - logon_type
+  HandleId:
+    - object.value
+  OpCorrelationID:
+    - chain_id
+    - datafield2                # deprecated
+  ObjectDN:
+    - object.name
+  ObjectClass:
+    - object.type
+  LDAPDisplayName:
+    - object.property
+  AttributeLDAPDisplayName:
+    - object.property
+  Value:
+    - object.value
+  AttributeValue:
+    - object.value
+  Details:
+    EventID=13:
+      - object.value
+    category=registry_event:
+      - object.value
+  TargetObject:
+    EventID in [12, 13, 14]:
+      - object.fullpath
+    category=registry_event:
+      - object.fullpath
+  QueryName:
+    EventID=22:
+    - datafield1
+  RuleName:
+    - detect
+  PipeName:
+    - object.name
+  StartFunction:
+   EventID=8:
+   - datafield10
+  StartModule:
+   EventID=8:
+   - datafield9
+  StartAddress:
+   EventID=8:
+   - datafield6
+  NewThreadId:
+   EventID=8:
+   - object.value
+  CallTrace:
+    EventID=10:
+    - datafield9
+  TargetProcessGuid:
+    EventID=8:
+    - object.process.guid
+  SourceProcessGuid:
+    EventID=8:
+    - subject.process.guid
+  TargetProcessGUID:
+    EventID=10:
+    - object.process.guid
+  SourceProcessGUID:
+    EventID=10:
+    - subject.process.guid
+  GrantedAccess:
+    EventID=10:
+    - object.value
+  SourceImage:
+    EventID in [8, 10]:
+    - subject.process.fullpath
+  SourceProcessId:
+    EventID in [8, 10]:
+    - subject.process.id
+  TargetImage:
+    EventID in [8, 10]:
+    - object.process.fullpath
+  TargetProcessId:
+    EventID=10:
+    - object.id
+    - object.process.id
+  ProcessId:
+    category=process_creation:
+    - object.process.id
+    - datafield2
+    - object.process.parent.id
+    category=registry_event:
+    - subject.process.id
+    - subject.id
+    EventID in [12, 13, 14, 17, 18, 4661]:
+    - subject.process.id 
+    - subject.id
+    EventID=4624:
+    - subject.process.id 
+    - datafield5
+    default:
+      - datafield2
+  FileVersion: 
+    - object.version
+    - object.process.version
+  ParentProcessName:
+    - object.process.parent.fullpath
+  NewProcessId:
+    - object.id
+    - object.process.id
+  NewProcessName:
+    - object.process.fullpath
+  ProcessName:
+    - subject.process.fullpath
+    - datafield3                              # deprecated
+  Description:
+    category=process_creation:
+      - object.value
+      - object.process.meta
+    EventID=4689: reason
+  TokenElevationType:
+    - subject.privileges
+    - subject.account.privileges
+  LogonId:
+    - datafield1
+    - subject.account.session_id
+    - object.account.session_id
+  CommandLine:
+    - datafield5
+    - object.process.cmdline
+  Image:
+    EventID in [12, 13, 14, 17, 18]:
+    - subject.process.fullpath
+    - subject.name                      # deprecated
+    category=registry_event:
+    - subject.process.fullpath
+    EventID=25:
+    - object.name
+    #default:
+    #- object.process.fullpath
+  ProcessGuid:
+    EventID in [12, 13, 14, 17, 18]:
+    - subject.process.guid
+    - datafield7                        # deprecated    
+    category=registry_event:
+    - subject.process.guid
+    - datafield7                        # deprecated    
+    default:
+    - datafield8
+    - object.process.guid
+  OriginalFileName:
+    - datafield10
+    - object.process.original_name
+  Product:
+    - datafield6
+  Company:
+    - datafield8
+  ParentProcessId:
+    - object.process.parent.id
+  ParentProcessGuid:
+    - object.process.parent.guid
+  ParentCommandLine:
+    - object.process.parent.cmdline
+  CurrentDirectory:
+    - object.process.cwd
+  ParentImage:
+    - object.process.parent.fullpath
+  Product: object.process.meta 
+  Company: object.process.meta 
+  ParentCommandLine:
+    - datafield9
+  OriginalFileName:
+    - datafield10
+  EventID:
+    - msgid
+  State:
+    EventID=4689:
+      - object.state
+      - reason
+  SubjectUserSid:
+    - subject.id
+    - subject.account.id
+  SubjectLogonId:
+    - datafield1                      # deprecated
+    - subject.account.session_id
+  SubjectUserName:
+    - subject.name
+    - subject.account.name
+  SubjectDomainName:
+    - subject.domain
+    - subject.account.domain
+  TargetLogonId:
+    - datafield7
+    - subject.account.session_id
+    - object.account.session_id
+  TargetUserName:
+    - subject.account.name
+    - object.account.name
+    - subject.name                  # deprecated
+  TargetDomainName:
+    - subject.account.domain
+    - object.account.domain
+    - subject.domain                # deprecated
+  TargetUserSid:
+    - subject.account.id
+    - object.account.id
+    - object.id                     # deprecated
+  AccessList:
+    EventID in [5145, 4661]:
+      - object.value
+      - subject.account.privileges
+  ShareName:
+    - object.name
+  ShareLocalPath:
+    - object.path
+  RelativeTargetName:
+    EventID=5145:
+      - datafield4
+  Accesses:
+    EventID=5145:
+      - datafield2
+  ObjectName:
+    - object.name
+    - object.path                   # deprecated
+  ObjectType:
+    - object.type
+  IpAddress:
+    EventID in [5145, 4624]:
+      - src.ip
+  IpPort:
+    EventID in [5145, 4624]:
+      - src.port
+  Computer:
+    EventID in [5145]:
+      - dst.fqdn
+  TaskName:
+    - object.name
+  Command:
+    EventID in [4698, 4699, 4700, 4701, 4702]:
+      - object.value 
+  Author:
+    EventID in [4698,4699,4700,4701,4702]:
+      - object.vendor
+  ServiceName:
+    - object.name
+  ServiceType:
+    - object.type
+  ServiceFileName:
+    - object.process.cmdline
+    - object.path                                 # deprecated
+  ImagePath:
+      - object.process.cmdline
+      - object.path                                 # deprecated
+  AccountName:
+    EventID=7045:
+      - object.value   
+  ServiceAccount:
+    - object.value
+  ServiceStartType:
+    - datafield2

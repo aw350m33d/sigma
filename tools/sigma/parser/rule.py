@@ -109,8 +109,13 @@ class SigmaParser:
         """Add value to values table, create key if it doesn't exist"""
         if key in self.values:
             self.values[key].add(str(value))
-        else:
-            self.values[key] = { str(value) }
+        else:            
+            if type(value) == list:   # add list items separately from each other
+                self.values[key] = set()
+                for val in value:
+                    self.values[key].add(str(val))
+            else:
+                self.values[key] = { str(value) }
 
     def get_logsource(self):
         """Returns logsource configuration object for current rule"""

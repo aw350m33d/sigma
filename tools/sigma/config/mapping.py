@@ -16,6 +16,7 @@
 
 from sigma.parser.condition import ConditionOR, NodeSubexpression, ConditionNULLValue
 from .exceptions import SigmaConfigParseError, FieldMappingError
+import re
 
 # Field Mapping Definitions
 def FieldMapping(source, target=None):
@@ -79,9 +80,22 @@ class ConditionalFieldMapping(SimpleFieldMapping):
         self.conditions = dict()    # condition field -> condition value -> target fields
         self.default = None
         for condition, target in self.target.items():
-            try:                    # key contains condition (field=value)
-                field, value = condition.split("=")
-                self.add_condition(field, value, target)
+            try:                    
+                if re.match(r"\w+\s*=\s*\w+", condition):    # key contains condition like (field=value)
+                    field, value = condition.split("=")
+                    self.add_condition(field.strip(), value.strip(), target)
+                elif re.match(r"\w+\s*in\s*\[[\w,\s]+\]", condition):    # key contains condition like (field in [value1, value2])
+                    match = re.search(r'(.*)\s*in\s*\[(.*)\]', condition, re.IGNORECASE)
+                    field = match.group(1)
+                    values = match.group(2).split(",")
+                    for val in values:
+                       self.add_condition(field.strip(), val.strip(), target)
+                else:
+                    if condition == "default":
+                        raise ValueError
+                    else:
+                        raise SigmaConfigParseError("Unexpected condition!")
+
             except ValueError as e:      # no, condition - "default" expected
                 if condition == "default":
                     if self.default == None:
