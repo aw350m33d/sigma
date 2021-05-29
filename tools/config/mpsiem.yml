@@ -22,6 +22,18 @@ backends:
 #  process_creation_1:
 #    category: process_creation
 #    product: window
+logsources:
+  registry_event:
+    category: registry_event
+    product: windows
+    conditions:
+      EventID: 
+        - 12 
+        - 13 
+        - 14
+    rewrite:
+      product: windows
+      service: sysmon
 fieldmappings:
   UserName:
     - subject.account.name
@@ -309,3 +321,4 @@ fieldmappings:
     - object.value
   ServiceStartType:
     - datafield2
+  
