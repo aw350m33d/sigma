@@ -133,6 +133,16 @@ class MPSiemQueryBackend(SingleTextQueryBackend):
                     return {"fieldname": "datafield3", "value": value}
             else:
                 return {"fieldname": "datafield4", "value": executable_name}
+        if fieldname == "EventType":
+            if "Delete" in value:
+                return {"fieldname": "action", "value": "remove"}
+            if "Create" in value:
+                return {"fieldname": "action", "value": "create"}
+            if "SetValue" in value:
+                return {"fieldname": "action", "value": "modify"}
+            if "RenameKey" in value:
+                return {"fieldname": "action", "value": "modify"}
+
         return {"fieldname": fieldname, "value": value}
 
     def generateMapItemNode(self, node):
@@ -159,7 +169,7 @@ class MPSiemQueryBackend(SingleTextQueryBackend):
                     return self.equalExpression % (transformed_fieldname, self.generateValueNode(transformed_value))
                 else:
                     if transformed_value.endswith('*') and transformed_value.startswith('*'):
-                        return self.containsExpressoin % (transformed_fieldname, transformed_value.strip('*'))
+                        return self.containsExpressoin % (transformed_fieldname, transformed_value.strip('*').replace('\\','\\\\'))
                     else:
                         if transformed_value.endswith('*'):
                             if "\*" in transformed_value:
@@ -169,7 +179,7 @@ class MPSiemQueryBackend(SingleTextQueryBackend):
                         elif transformed_value.startswith('*'):
                             return self.endswithExpression % (transformed_fieldname, transformed_value.strip('*').replace('\\','\\\\'))
                         else:
-                            raise Exception("Unsupported pattern foramt!") 
+                            raise Exception("Unsupported pattern format!") 
                             #return self.mapExpression % (transformed_fieldname, self.generateValueNode(transformed_value))
 
             elif type(mapping_result) == list:
