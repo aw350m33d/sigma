@@ -139,6 +139,15 @@ def main():
     scm = SigmaConfigurationManager()
 
     logger = logging.getLogger(__name__)
+
+    # adding console handler
+    console_handler = logging.StreamHandler(sys.stdout)
+    console_handler.setFormatter(logging.Formatter(
+        "%(asctime)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S"))
+
+    logger.addHandler(console_handler)
+
     if cmdargs.debug:   # pragma: no cover
         logger.setLevel(logging.DEBUG)
 
