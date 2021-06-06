@@ -1,0 +1,23 @@
+title: Windows Registry Persistence AMSI Provider Registration
+id: caea64a0-1646-4dc7-b34a-d371c2a971ab
+status: experimental
+description: Detects changes to the Registry in which an AMSI provider gets registered to be loaded into any process involving AMSI (powershell, clr, etc.)
+references:
+    - https://b4rtik.github.io/posts/antimalware-scan-interface-provider-for-persistence/
+author: Konstantin Grishchenko, oscd.community
+date: 2021/05/27
+tags:
+    - attack.persistence
+    - attack.t1546
+logsource:
+    category: registry_event
+    product: windows
+detection:
+    delete_event:
+        EventType: 'DeleteKey' # don't want DeleteKey events
+    registry_key:    
+        TargetObject|startswith: 'HKLM\SOFTWARE\Microsoft\AMSI\Providers'
+    condition: registry_key and not delete_event  
+falsepositives:
+    - Legitimate AMSI provider registration, e.g. during antivirus software installation
+level: medium
