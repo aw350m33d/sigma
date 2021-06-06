@@ -13,11 +13,11 @@ logsource:
     category: registry_event
     product: windows
 detection:
-    selection1:
+    delete_event:
         EventType: 'DeleteKey' # don't want DeleteKey events
-    selection2:    
+    registry_key:    
         TargetObject|startswith: 'HKLM\SOFTWARE\Microsoft\AMSI\Providers'
-    condition: not selection1 and selection2 
+    condition: registry_key and not delete_event  
 falsepositives:
     - Legitimate AMSI provider registration, e.g. during antivirus software installation
 level: medium
